@@ -1,21 +1,18 @@
 package RMIT;
 
-import java.util.Date;
-
-public class Student {
+public class Course {
     private String id;
     private String name;
-    private Date birthDate;
+    private int credits;
 
-    public Student() {
+    public Course() {
         super();
     }
 
-
-    public Student(String id, String name, Date birthDate) {
+    public Course(String id, String name) {
         this.id = id;
         this.name = name;
-        this.birthDate = birthDate;
+        this.credits = 0;
     }
 
     // ### GETTERS ### //
@@ -27,11 +24,11 @@ public class Student {
         return name;
     }
 
-    public Date getBirthDate() {
-        return birthDate;
+    public int getCredits() {
+        return credits;
     }
 
-    // ### SETTERS ### //
+    // ### SETTERS #### //
     public void setId(String id) {
         this.id = id;
     }
@@ -40,7 +37,7 @@ public class Student {
         this.name = name;
     }
 
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+    public void setCredits(int credits) {
+        this.credits = credits;
     }
 }
