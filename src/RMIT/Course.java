@@ -54,4 +54,9 @@ public class Course implements Comparable<Course> {
         return -1;
     }
 
+    @Override
+    public String toString() {
+        return "Course ID: " + this.getId() + " || " + "Course Name: " + this.getName() +
+                " || " + "Course Credits: " + this.getCredits();
+    }
 }

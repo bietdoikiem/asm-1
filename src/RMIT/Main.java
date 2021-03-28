@@ -35,5 +35,6 @@ public class Main {
         for (StudentEnrolment enrolment: manager.getListOfEnrolments()) {
             System.out.println(enrolment.toString());
         }
+        manager.update();
     }
 }

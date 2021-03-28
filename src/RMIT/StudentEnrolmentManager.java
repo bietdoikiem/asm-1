@@ -75,7 +75,13 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
 
 
     public void update() {
-
+        System.out.println("Update functionality called (Type 'exit' to cancel the process at any points). Please: ");
+        String sId = stringInputValidator("student");
+        System.out.println(sId);
+        ArrayList<Course> listOfCourses = getCoursesByStudentId(sId);
+        for (Course course: listOfCourses) {
+            System.out.println(course.toString());
+        }
     }
 
     public void delete() {
