@@ -2,53 +2,54 @@ package RMIT;
 
 import java.util.ArrayList;
 
-public class StudentEnrolment implements StudentEnrolmentManager {
-    private ArrayList<Student> student;
-    private ArrayList<Course> course;
+public class StudentEnrolment implements Comparable<StudentEnrolment> {
+    private Student student;
+    private Course course;
     private String semester;
 
     public StudentEnrolment() {
         super();
     }
 
-    public StudentEnrolment(String semester) {
-        this.student = new ArrayList<Student>();
-        this.course = new ArrayList<Course>();
+    public StudentEnrolment(Student student, Course course,String semester) {
+        this.student = student;
+        this.course = course;
         this.semester = semester;
     }
-
-    // ### GETTERS ### //
-    public ArrayList<Student> getStudent() {
+    // ##### //
+    public Student getStudent() {
         return student;
     }
 
-    public ArrayList<Course> getCourse() {
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public Course getCourse() {
         return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
     public String getSemester() {
         return semester;
     }
 
-    // ### SETTERS ### //
-
     public void setSemester(String semester) {
         this.semester = semester;
     }
-
-    public boolean add(Student student) {
-        return true;
+    // ##### //
+    public int compareTo(StudentEnrolment enrolment) {
+        if (this.student.compareTo(enrolment.student) == 1 && this.course.compareTo(enrolment.course) == 1 && this.semester.equals(enrolment.semester)) {
+            return 1;
+        }
+        return -1;
     }
 
-    public boolean update(Student student) {
-        return false;
-    }
-
-    public boolean getOne(String studentID) {
-        return true;
-    }
-
-    public ArrayList<Student> getAll() {
-        return student;
+    @Override
+    public String toString() {
+        return "Student ID: " + this.student.getId() + " || " + "Course ID: " + this.course.getId() + " || " + this.semester;
     }
 }

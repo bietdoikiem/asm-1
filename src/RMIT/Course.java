@@ -1,6 +1,6 @@
 package RMIT;
 
-public class Course {
+public class Course implements Comparable<Course> {
     private String id;
     private String name;
     private int credits;
@@ -13,6 +13,12 @@ public class Course {
         this.id = id;
         this.name = name;
         this.credits = 0;
+    }
+
+    public Course(String id, String name, int credits) {
+        this.id = id;
+        this.name = name;
+        this.credits = credits;
     }
 
     // ### GETTERS ### //
@@ -40,4 +46,12 @@ public class Course {
     public void setCredits(int credits) {
         this.credits = credits;
     }
+
+    public int compareTo(Course course) {
+        if (this.id.equals(course.id) && this.name.equals(course.name) && this.credits == course.credits) {
+            return 1;
+        }
+        return -1;
+    }
+
 }

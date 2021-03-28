@@ -2,7 +2,7 @@ package RMIT;
 
 import java.util.Date;
 
-public class Student {
+public class Student implements Comparable<Student> {
     private String id;
     private String name;
     private Date birthDate;
@@ -42,5 +42,12 @@ public class Student {
 
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public int compareTo(Student student) {
+        if (this.id.equals(student.id) && this.name.equals(student.name) && this.birthDate.equals(student.birthDate)) {
+            return 1;
+        }
+        return -1;
     }
 }
