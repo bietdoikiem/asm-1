@@ -29,12 +29,13 @@ public class Main {
         assert manager != null;
         manager.setStudentManager(studentManager);
         manager.setCourseManager(courseManager);
-        manager.add();
-
-        System.out.println("List of enrolments: ");
-        for (StudentEnrolment enrolment: manager.getListOfEnrolments()) {
-            System.out.println(enrolment.toString());
-        }
-        manager.update();
+//        manager.add();
+//
+//        System.out.println("List of enrolments: ");
+//        for (StudentEnrolment enrolment: manager.getListOfEnrolments()) {
+//            System.out.println(enrolment.toString());
+//        }
+//        manager.update();
+        manager.menu();
     }
 }
