@@ -1,5 +1,7 @@
 package RMIT;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -42,10 +44,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         return enrolment;
     }
 
-    public StudentEnrolment deleteEnrolment(StudentEnrolment enrolment) {
-        this.listOfEnrolments.remove(enrolment);
-        return enrolment;
-    }
+
 
     public ArrayList<StudentEnrolment> getListOfEnrolments() {
         return listOfEnrolments;
@@ -191,7 +190,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                         }
                         int deleteCounter = 0;
                         for (Course course : listOfCourseRefs) {
-                            StudentEnrolment enrolment = this.deleteEnrolment(findEnrolment(student, course, semester));
+                            StudentEnrolment enrolment = this.delete(findEnrolment(student, course, semester));
                             if (enrolment != null) {
                                 deleteCounter++;
                             }
@@ -215,8 +214,9 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
 
     }
 
-    public void delete() {
-
+    public StudentEnrolment delete(StudentEnrolment enrolment) {
+        this.listOfEnrolments.remove(enrolment);
+        return enrolment;
     }
 
     public void getOne() {
@@ -245,11 +245,13 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                     break;
                 }
                 case "3": {
-                    System.out.println("Print all courses for 1 student in 1 semester");
+
+                    this.displayCoursesByStudent();
+
                     break;
                 }
                 case "4": {
-                    System.out.println("Print all students of 1 course in 1 semester");
+                    this.displayStudentByCourse();
                     break;
                 }
                 case "exit": {
@@ -262,6 +264,137 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         }
     }
 
+    public void displayCoursesByStudent() {
+        Scanner sc = new Scanner(System.in);
+        String navigateOption = "";
+        while (true) {
+            String sId = stringInputValidator("student");
+            // -- cancel check --
+            if (sId.equals("return")) {
+                break;
+            }
+            String semester = stringInputValidator("semester");
+            // -- cancel check --
+            if (semester.equals("return".toUpperCase())) {
+                break;
+            }
+            // get list of courses by semester
+            ArrayList<Course> listOfCourses = getCoursesByStudentId(sId, semester);
+
+            System.out.printf("Student %s - List of courses by semester %s: %n", sId, semester);
+            System.out.printf("%-15s%-25s%-25s\n","ID","Name","Credits");
+            for (Course course : listOfCourses) {
+                System.out.printf("%-15s%-25s%-25s\n",course.getId(),course.getName(),course.getCredits());
+            }
+
+            System.out.println("Do you want to save these result to CSV file ?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            navigateOption = sc.nextLine();
+            if (navigateOption.equals("1")) {
+                this.courseToCsv(sId, listOfCourses);
+            }
+            // end-of-function option
+            System.out.println("Do you want to continue to view more courses of a student? (Press enter or type any keys to keep adding or type 'return' to return to Main menu)");
+            navigateOption = sc.nextLine();
+            if (navigateOption.equals("return")) {
+                break;
+            }
+        }
+    }
+
+    public void displayStudentByCourse() {
+        Scanner sc = new Scanner(System.in);
+        String navigateOption = "";
+        while (true) {
+            String cId = stringInputValidator("course");
+            // -- cancel check --
+            if (cId.equals("return")) {
+                break;
+            }
+            String semester = stringInputValidator("semester");
+            // -- cancel check --
+            if (semester.equals("return".toUpperCase())) {
+                break;
+            }
+            // get list of courses by semester
+            ArrayList<Student> listOfStudents = getStudentsByCourseId(cId, semester);
+
+            System.out.printf("Course %s - List of students by semester %s: %n", cId, semester);
+            System.out.printf("%-15s%-25s%-25s\n","ID","Name","DateOfBirth");
+            for (Student student: listOfStudents) {
+                System.out.printf("%-15s%-25s%-25s\n",student.getId(),student.getName(),student.getBirthDate().toString());
+            }
+
+            System.out.println("Do you want to save these result to CSV file ?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            navigateOption = sc.nextLine();
+            if (navigateOption.equals("1")) {
+                this.studentToCsv(cId, listOfStudents);
+            }
+            // end-of-function option
+            System.out.println("Do you want to continue to view more courses by student? (Press enter or type any keys to keep adding or type 'return' to return to Main menu)");
+            navigateOption = sc.nextLine();
+            if (navigateOption.equals("return")) {
+                break;
+            }
+        }
+    }
+    public void courseToCsv(String filename, ArrayList<Course> courseList) {
+        try {
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/student-report/%s.csv", filename));
+            csvWriter.append("ID");
+            csvWriter.append(",");
+            csvWriter.append("Name");
+            csvWriter.append(",");
+            csvWriter.append("Credits");
+            csvWriter.append("\n");
+
+            for (Course course: courseList) {
+                csvWriter.append(course.getId());
+                csvWriter.append(",");
+                csvWriter.append(course.getName());
+                csvWriter.append(",");
+                csvWriter.append(String.format("%d",course.getCredits()));
+                csvWriter.append("\n");
+            }
+            csvWriter.flush();
+            csvWriter.close();
+            System.out.println("Save report to file successfully!");
+        } catch (IOException e) {
+            System.out.println("Cannot save report to file! Please check again");
+            e.printStackTrace();
+        }
+    }
+
+    public void studentToCsv(String filename, ArrayList<Student> studentList) {
+        try {
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/course-report/%s.csv", filename));
+            csvWriter.append("ID");
+            csvWriter.append(",");
+            csvWriter.append("Name");
+            csvWriter.append(",");
+            csvWriter.append("Date Of Birth");
+            csvWriter.append("\n");
+
+            for (Student student: studentList) {
+                csvWriter.append(student.getId());
+                csvWriter.append(",");
+                csvWriter.append(student.getName());
+                csvWriter.append(",");
+                csvWriter.append(String.format("%s",student.getBirthDate().toString()));
+                csvWriter.append("\n");
+            }
+            csvWriter.flush();
+            csvWriter.close();
+            System.out.println("Save report to file successfully!");
+        } catch (IOException e) {
+            System.out.println("Cannot save report to file! Please check again");
+            e.printStackTrace();
+        }
+    }
+
     public ArrayList<Course> getCoursesByStudentId(String studentId) {
         ArrayList<Course> foundList = new ArrayList<Course>();
 
@@ -270,7 +403,6 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                 foundList.add(enrolment.getCourse());
             }
         }
-
         return foundList;
     }
 
@@ -379,6 +511,20 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                         return inputStr;
                     } else {
                         System.out.println("Input is not validated in the student database. (Try again or cancelling request by typing 'return'):");
+                    }
+                }
+            }
+            case "course": {
+                System.out.println("Enter course's ID: ");
+                while (true) {
+                    inputStr = input.nextLine().toUpperCase();
+                    if (getValidCourseId(inputStr) != null) {
+                        return inputStr;
+                    } else if (inputStr.equals("return")) {
+                        System.out.println("Returning to main menu...");
+                        return inputStr;
+                    } else {
+                        System.out.println("Input is not validated in the course database. (Try again or cancelling request by typing 'return'):");
                     }
                 }
             }
