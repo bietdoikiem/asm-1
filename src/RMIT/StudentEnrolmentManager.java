@@ -1,8 +1,11 @@
 package RMIT;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -129,15 +132,15 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
 
             // Display course info by columns and rows format
             System.out.println("Student " + sId + " - List of courses: ");
-            System.out.println("===========================================================");
-            System.out.printf("%-15s%-25s%-25s\n","ID","Name","Credits");
+            System.out.println("======================================================================================");
+            System.out.printf("%-15s%-50s%-50s\n","ID","Name","Credits");
             for (Course course : listOfCourses) {
-                System.out.printf("%-15s%-25s%-25s\n",course.getId(),course.getName(),course.getCredits());
+                System.out.printf("%-15s%-50s%-50s\n",course.getId(),course.getName(),course.getCredits());
             }
 
             // Update option (1 - Add, 2 - Delete)
-            System.out.println("===========================================================");
-            System.out.println("Do you want to delete or add new courses from the list? (Choose between 1 - 2)");
+            System.out.println("======================================================================================");
+            System.out.println("Do you want to delete or add new courses from the list? (Choose between 1 - 2 or type 'return' to return to Main Menu)");
             System.out.println("1. Add");
             System.out.println("2. Delete");
             navigateOption = sc.nextLine();
@@ -228,11 +231,12 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         String input = "";
         while (true) {
             System.out.println("===== Menu to manage enrolments for students =====");
+            System.out.println("0. Exit console application");
             System.out.println("1. Enroll student for a semester");
             System.out.println("2. Update enrollments for a student");
             System.out.println("3. Display all courses of a student in a specified semester");
             System.out.println("4. Display all students of a course in a specified semester");
-            System.out.println("===== Choose the above options by typing its indicated number order (1 to 4) || Exit the console by typing 'exit' =====");
+            System.out.println("===== Choose the above options by typing its indicated number order (0 to 4)");
             System.out.print("Your choice: ");
             input = sc.nextLine();
             switch (input) {
@@ -254,7 +258,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                     this.displayStudentByCourse();
                     break;
                 }
-                case "exit": {
+                case "0": {
                     System.out.println("Console is shutting down...");
                     System.exit(0);
                 }
@@ -282,9 +286,9 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             ArrayList<Course> listOfCourses = getCoursesByStudentId(sId, semester);
 
             System.out.printf("Student %s - List of courses by semester %s: %n", sId, semester);
-            System.out.printf("%-15s%-25s%-25s\n","ID","Name","Credits");
+            System.out.printf("%-15s%-50s%-50s\n","ID","Name","Credits");
             for (Course course : listOfCourses) {
-                System.out.printf("%-15s%-25s%-25s\n",course.getId(),course.getName(),course.getCredits());
+                System.out.printf("%-15s%-50s%-50s\n",course.getId(),course.getName(),course.getCredits());
             }
 
             System.out.println("Do you want to save these result to CSV file ?");
@@ -321,9 +325,9 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             ArrayList<Student> listOfStudents = getStudentsByCourseId(cId, semester);
 
             System.out.printf("Course %s - List of students by semester %s: %n", cId, semester);
-            System.out.printf("%-15s%-25s%-25s\n","ID","Name","DateOfBirth");
+            System.out.printf("%-15s%-50s%-50s\n","ID","Name","DateOfBirth");
             for (Student student: listOfStudents) {
-                System.out.printf("%-15s%-25s%-25s\n",student.getId(),student.getName(),student.getBirthDate().toString());
+                System.out.printf("%-15s%-50s%-50s\n",student.getId(),student.getName(),student.getBirthDateString());
             }
 
             System.out.println("Do you want to save these result to CSV file ?");
@@ -343,12 +347,12 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
     }
     public void courseToCsv(String filename, ArrayList<Course> courseList) {
         try {
-            FileWriter csvWriter = new FileWriter(String.format("src/resources/student-report/%s.csv", filename));
-            csvWriter.append("ID");
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/student-report/%s_courses.csv", filename));
+            csvWriter.append("id");
             csvWriter.append(",");
-            csvWriter.append("Name");
+            csvWriter.append("name");
             csvWriter.append(",");
-            csvWriter.append("Credits");
+            csvWriter.append("credits");
             csvWriter.append("\n");
 
             for (Course course: courseList) {
@@ -370,12 +374,12 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
 
     public void studentToCsv(String filename, ArrayList<Student> studentList) {
         try {
-            FileWriter csvWriter = new FileWriter(String.format("src/resources/course-report/%s.csv", filename));
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/course-report/%s_students.csv", filename));
             csvWriter.append("ID");
             csvWriter.append(",");
             csvWriter.append("Name");
             csvWriter.append(",");
-            csvWriter.append("Date Of Birth");
+            csvWriter.append("birthDate");
             csvWriter.append("\n");
 
             for (Student student: studentList) {
@@ -383,7 +387,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                 csvWriter.append(",");
                 csvWriter.append(student.getName());
                 csvWriter.append(",");
-                csvWriter.append(String.format("%s",student.getBirthDate().toString()));
+                csvWriter.append(String.format("%s",student.getBirthDateString()));
                 csvWriter.append("\n");
             }
             csvWriter.flush();
@@ -392,6 +396,28 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         } catch (IOException e) {
             System.out.println("Cannot save report to file! Please check again");
             e.printStackTrace();
+        }
+    }
+
+    public void addEnrolmentsFromCsv(String route) {
+        try {
+            String row;
+            BufferedReader csvReader = new BufferedReader(new FileReader(route));
+            // skip first header line
+            row = csvReader.readLine();
+            String[] header = row.split(",");
+            HashMap<String, String> attributeMap = new HashMap<String, String>();
+            while ((row = csvReader.readLine()) != null) {
+                String[] data = row.split(",");
+                for (int i = 0; i < header.length; i++) {
+                    attributeMap.put(header[i], data[i]);
+                }
+                this.listOfEnrolments.add(new StudentEnrolment(this.getValidStudentId(attributeMap.get("studentId")), this.getValidCourseId(attributeMap.get("courseId")), attributeMap.get("semester")));
+            }
+            csvReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(IndexOutOfBoundsException ignored) {
         }
     }
 

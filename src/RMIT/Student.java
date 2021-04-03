@@ -31,6 +31,10 @@ public class Student implements Comparable<Student> {
         return birthDate;
     }
 
+    public String getBirthDateString() {
+        return Converter.DateToStr(this.birthDate);
+    }
+
     // ### SETTERS ### //
     public void setId(String id) {
         this.id = id;
@@ -49,5 +53,10 @@ public class Student implements Comparable<Student> {
             return 1;
         }
         return -1;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + this.getId() + " " + "NAME: " + this.getName() + " " + "birthDate: " + this.getBirthDateString();
     }
 }
