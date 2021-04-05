@@ -4,13 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StudentEnrolmentManager implements StudentEnrolmentManageable {
+public class StudentEnrolmentManager implements StudentEnrolmentManageable, CSVManageable<Course> {
     // Implement Singleton Pattern to Manager class
     private static StudentEnrolmentManager single_instance = null;
     private ArrayList<StudentEnrolment> listOfEnrolments;
@@ -47,14 +45,8 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         return enrolment;
     }
 
-
-
     public ArrayList<StudentEnrolment> getListOfEnrolments() {
         return listOfEnrolments;
-    }
-
-    public void setListOfEnrolments(ArrayList<StudentEnrolment> listOfEnrolments) {
-        this.listOfEnrolments = listOfEnrolments;
     }
 
     public void add() {
@@ -170,7 +162,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                             }
                         }
                         System.out.println("Enroll Student " + sId + " to " + addCounter + " more course(s) successfully!");
-                        System.out.println("Do you want to continue to update enrolments for more students? (Press enter or type any keys to keep modifying or type 'return' to return to Main menu)");
+                        System.out.println("Do you want to continue to update enrolments for more students? (Press enter or type any keys to keep modifying or type 'return' to return to Main Menu)");
                         navigateOption = sc.nextLine();
                         break;
                     } while (true);
@@ -223,8 +215,53 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
     }
 
     public void getOne() {
-
+        Scanner sc = new Scanner(System.in);
+        String navigateOption = "";
+        while (true) {
+            System.out.println("1. Display all courses of a student in one semester");
+            System.out.println("2. Display all students of a course in one semester");
+            System.out.println("3. Display all courses offer in one semester");
+            System.out.println("Choose options (1 to 3). Or type 'return' to Main Menu");
+            navigateOption = sc.nextLine();
+            switch(navigateOption) {
+                case "1": {
+                    this.displayCoursesByStudent();
+                    break;
+                }
+                case "2": {
+                    this.displayStudentsByCourse();
+                    break;
+                }
+                case "3": {
+                    this.displayCoursesBySemester();
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            if (navigateOption.equals("return") || navigateOption.equals("RETURN")) {
+                return;
+            }
+        }
     }
+
+    public void getAll() {
+        String semester = stringInputValidator("semester");
+        // -- cancel check --
+        if (semester.equals("return")) {
+            return;
+        }
+        System.out.println("====================================================================================================================================================================================");
+        System.out.printf("%-15s%-30s%-30s%-30s%-50s%-15s%-50s\n","SID","SName","SBirthDate", "CID", "CName", "CCredits", "Semester");
+        for (StudentEnrolment enrolment: this.listOfEnrolments) {
+            System.out.printf("%-15s%-30s%-30s%-30s%-50s%-15s%-50s\n",enrolment.getStudent().getId(),enrolment.getStudent().getName(),enrolment.getStudent().getBirthDateString(),
+                    enrolment.getCourse().getId(), enrolment.getCourse().getName(), enrolment.getCourse().getCredits(),semester);
+        }
+        // Update option (1 - Add, 2 - Delete)
+        System.out.println("====================================================================================================================================================================================");
+    }
+
 
     public void menu() {
         Scanner sc = new Scanner(System.in);
@@ -234,8 +271,8 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             System.out.println("0. Exit console application");
             System.out.println("1. Enroll student for a semester");
             System.out.println("2. Update enrollments for a student");
-            System.out.println("3. Display all courses of a student in a specified semester");
-            System.out.println("4. Display all students of a course in a specified semester");
+            System.out.println("3. Display Reports By Semester");
+            System.out.println("4. Display All Enrolments By Semester");
             System.out.println("===== Choose the above options by typing its indicated number order (0 to 4)");
             System.out.print("Your choice: ");
             input = sc.nextLine();
@@ -249,13 +286,11 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                     break;
                 }
                 case "3": {
-
-                    this.displayCoursesByStudent();
-
+                    this.getOne();
                     break;
                 }
                 case "4": {
-                    this.displayStudentByCourse();
+                    this.getAll();
                     break;
                 }
                 case "0": {
@@ -267,6 +302,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             }
         }
     }
+
 
     public void displayCoursesByStudent() {
         Scanner sc = new Scanner(System.in);
@@ -296,10 +332,10 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             System.out.println("2. No");
             navigateOption = sc.nextLine();
             if (navigateOption.equals("1")) {
-                this.courseToCsv(sId, listOfCourses);
+                courseManager.saveToCsv(sId, listOfCourses);
             }
             // end-of-function option
-            System.out.println("Do you want to continue to view more courses of a student? (Press enter or type any keys to keep adding or type 'return' to return to Main menu)");
+            System.out.println("Do you want to continue to view more courses of a student? (Press enter or type any keys to keep adding or type 'return' to return to report menu)");
             navigateOption = sc.nextLine();
             if (navigateOption.equals("return")) {
                 break;
@@ -307,7 +343,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         }
     }
 
-    public void displayStudentByCourse() {
+    public void displayStudentsByCourse() {
         Scanner sc = new Scanner(System.in);
         String navigateOption = "";
         while (true) {
@@ -335,19 +371,55 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             System.out.println("2. No");
             navigateOption = sc.nextLine();
             if (navigateOption.equals("1")) {
-                this.studentToCsv(cId, listOfStudents);
+                studentManager.saveToCsv(cId, listOfStudents);
             }
             // end-of-function option
-            System.out.println("Do you want to continue to view more courses by student? (Press enter or type any keys to keep adding or type 'return' to return to Main menu)");
+            System.out.println("Do you want to continue to view more courses by student? (Press enter or type any keys to keep adding or type 'return' to return to report menu)");
             navigateOption = sc.nextLine();
             if (navigateOption.equals("return")) {
                 break;
             }
         }
     }
-    public void courseToCsv(String filename, ArrayList<Course> courseList) {
+
+    public void displayCoursesBySemester() {
+        Scanner sc = new Scanner(System.in);
+        String navigateOption = "";
+        while (true) {
+            String semester = stringInputValidator("semester");
+            // -- cancel check --
+            if (semester.equals("return")) {
+                break;
+            }
+            // get list of courses by semester
+            HashSet<Course> setOfCourses = getCoursesBySemester(semester);
+
+            System.out.printf("List of courses by semester %s: %n", semester);
+            System.out.printf("%-15s%-50s%-50s\n", "ID", "Name", "Credits");
+            for (Course course: setOfCourses) {
+                System.out.printf("%-15s%-50s%-50s\n",course.getId(),course.getName(),course.getCredits());
+            }
+
+            System.out.println("Do you want to save these result to CSV file ?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            navigateOption = sc.nextLine();
+            if (navigateOption.equals("1")) {
+                ArrayList<Course> listOfCourses = new ArrayList<Course>(setOfCourses);
+                this.saveToCsv(semester, listOfCourses);
+            }
+            // end-of-function option
+            System.out.println("Do you want to continue to view more courses by student? (Press enter or type any keys to keep adding or type 'return' to return to report menu)");
+            navigateOption = sc.nextLine();
+            if (navigateOption.equals("return")) {
+                break;
+            }
+        }
+    }
+
+    public void saveToCsv(String filename, ArrayList<Course> list) {
         try {
-            FileWriter csvWriter = new FileWriter(String.format("src/resources/student-report/%s_courses.csv", filename));
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/semester-course-report/%s_courses.csv", filename));
             csvWriter.append("id");
             csvWriter.append(",");
             csvWriter.append("name");
@@ -355,7 +427,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             csvWriter.append("credits");
             csvWriter.append("\n");
 
-            for (Course course: courseList) {
+            for (Course course: list) {
                 csvWriter.append(course.getId());
                 csvWriter.append(",");
                 csvWriter.append(course.getName());
@@ -372,34 +444,8 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         }
     }
 
-    public void studentToCsv(String filename, ArrayList<Student> studentList) {
-        try {
-            FileWriter csvWriter = new FileWriter(String.format("src/resources/course-report/%s_students.csv", filename));
-            csvWriter.append("ID");
-            csvWriter.append(",");
-            csvWriter.append("Name");
-            csvWriter.append(",");
-            csvWriter.append("birthDate");
-            csvWriter.append("\n");
 
-            for (Student student: studentList) {
-                csvWriter.append(student.getId());
-                csvWriter.append(",");
-                csvWriter.append(student.getName());
-                csvWriter.append(",");
-                csvWriter.append(String.format("%s",student.getBirthDateString()));
-                csvWriter.append("\n");
-            }
-            csvWriter.flush();
-            csvWriter.close();
-            System.out.println("Save report to file successfully!");
-        } catch (IOException e) {
-            System.out.println("Cannot save report to file! Please check again");
-            e.printStackTrace();
-        }
-    }
-
-    public void addEnrolmentsFromCsv(String route) {
+    public void addFromCsv(String route) {
         try {
             String row;
             BufferedReader csvReader = new BufferedReader(new FileReader(route));
@@ -446,8 +492,6 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
     }
 
 
-
-
     public ArrayList<Student> getStudentsByCourseId(String courseId) {
         ArrayList<Student> foundList = new ArrayList<Student>();
 
@@ -473,6 +517,17 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         return foundList;
     }
 
+    public HashSet<Course> getCoursesBySemester(String semester) {
+        HashSet<Course> foundSet = new HashSet<Course>();
+
+        for (StudentEnrolment enrolment: this.listOfEnrolments) {
+            if (enrolment.getSemester().equals(semester)) {
+                foundSet.add(enrolment.getCourse());
+            }
+        }
+        return foundSet;
+    }
+
     public StudentEnrolment findEnrolment(Student student, Course course, String semester) {
         StudentEnrolment searchEnrolment = new StudentEnrolment(student, course, semester);
         for (StudentEnrolment enrolment: this.listOfEnrolments) {
@@ -483,9 +538,6 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         return null;
     }
 
-    public ArrayList<StudentEnrolment> getAll() {
-        return listOfEnrolments;
-    }
 
     // --- Helper Functions -- //
     public boolean isDuplicatedEnrolment(StudentEnrolment enrolment) {
@@ -546,7 +598,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                     inputStr = input.nextLine().toUpperCase();
                     if (getValidCourseId(inputStr) != null) {
                         return inputStr;
-                    } else if (inputStr.equals("return")) {
+                    } else if (inputStr.equals("RETURN")) {
                         System.out.println("Returning to main menu...");
                         return inputStr;
                     } else {

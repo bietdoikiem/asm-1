@@ -7,6 +7,5 @@ public interface StudentEnrolmentManageable {
     public abstract void update();
     public abstract StudentEnrolment delete(StudentEnrolment enrolment);
     public abstract void getOne();
-    public abstract ArrayList<StudentEnrolment> getAll();
-
+    public abstract void getAll();
 }

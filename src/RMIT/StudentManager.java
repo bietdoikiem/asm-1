@@ -2,12 +2,13 @@ package RMIT;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class StudentManager {
+public class StudentManager implements CSVManageable<Student> {
 
     private static StudentManager single_instance;
     private ArrayList<Student> listOfStudents;
@@ -27,7 +28,7 @@ public class StudentManager {
         this.listOfStudents = listOfStudents;
     }
 
-    public void addStudentsFromCsv(String route) {
+    public void addFromCsv(String route) {
         try {
             String row;
             BufferedReader csvReader = new BufferedReader(new FileReader(route));
@@ -46,6 +47,33 @@ public class StudentManager {
         } catch (IOException e) {
             e.printStackTrace();
         } catch(IndexOutOfBoundsException ignored) {
+        }
+    }
+
+    public void saveToCsv(String filename, ArrayList<Student> list) {
+        try {
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/course-report/%s_students.csv", filename));
+            csvWriter.append("ID");
+            csvWriter.append(",");
+            csvWriter.append("Name");
+            csvWriter.append(",");
+            csvWriter.append("birthDate");
+            csvWriter.append("\n");
+
+            for (Student student: list) {
+                csvWriter.append(student.getId());
+                csvWriter.append(",");
+                csvWriter.append(student.getName());
+                csvWriter.append(",");
+                csvWriter.append(String.format("%s",student.getBirthDateString()));
+                csvWriter.append("\n");
+            }
+            csvWriter.flush();
+            csvWriter.close();
+            System.out.println("Save report to file successfully!");
+        } catch (IOException e) {
+            System.out.println("Cannot save report to file! Please check again");
+            e.printStackTrace();
         }
     }
 

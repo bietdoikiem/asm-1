@@ -2,11 +2,12 @@ package RMIT;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class CourseManager {
+public class CourseManager implements CSVManageable<Course> {
 
     private static CourseManager single_instance = null;
     private ArrayList<Course> listOfCourses;
@@ -27,7 +28,7 @@ public class CourseManager {
         return listOfCourses;
     }
 
-    public void addCoursesFromCsv(String route) {
+    public void addFromCsv(String route) {
         try {
             String row;
             BufferedReader csvReader = new BufferedReader(new FileReader(route));
@@ -46,6 +47,33 @@ public class CourseManager {
         } catch (IOException e) {
             e.printStackTrace();
         } catch(IndexOutOfBoundsException ignored) {
+        }
+    }
+
+    public void saveToCsv(String filename, ArrayList<Course> list) {
+        try {
+            FileWriter csvWriter = new FileWriter(String.format("src/resources/student-report/%s_courses.csv", filename));
+            csvWriter.append("id");
+            csvWriter.append(",");
+            csvWriter.append("name");
+            csvWriter.append(",");
+            csvWriter.append("credits");
+            csvWriter.append("\n");
+
+            for (Course course: list) {
+                csvWriter.append(course.getId());
+                csvWriter.append(",");
+                csvWriter.append(course.getName());
+                csvWriter.append(",");
+                csvWriter.append(String.format("%d",course.getCredits()));
+                csvWriter.append("\n");
+            }
+            csvWriter.flush();
+            csvWriter.close();
+            System.out.println("Save report to file successfully!");
+        } catch (IOException e) {
+            System.out.println("Cannot save report to file! Please check again");
+            e.printStackTrace();
         }
     }
 

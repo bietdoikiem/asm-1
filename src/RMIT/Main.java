@@ -13,13 +13,13 @@ public class Main {
         StudentEnrolmentManager studentEnrolmentManager = StudentEnrolmentManager.getInstance();
         if (studentManager != null && courseManager != null && studentEnrolmentManager != null) {
             // retrieve students and courses from csv file
-            studentManager.addStudentsFromCsv("src/resources/students/students.csv");
-            courseManager.addCoursesFromCsv("src/resources/courses/courses.csv");
+            studentManager.addFromCsv("src/resources/students/students.csv");
+            courseManager.addFromCsv("src/resources/courses/courses.csv");
             // Set students and courses database for studentEnrolmentManager
             studentEnrolmentManager.setStudentManager(studentManager);
             studentEnrolmentManager.setCourseManager(courseManager);
             // retrieve enrolments from csv file
-            studentEnrolmentManager.addEnrolmentsFromCsv("src/resources/student-enrolments/student-enrolments.csv");
+            studentEnrolmentManager.addFromCsv("src/resources/student-enrolments/student-enrolments.csv");
         }
 //        if (studentManager != null && courseManager != null) {
 //            System.out.println("List of students");
