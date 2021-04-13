@@ -18,4 +18,7 @@
 -> Files for all students of a course is stored in: /src/resources/course-report/filename.csv
 -> Files for all courses of a semester is stored in: /src/resources/semester-course-report/filename.csv
 
+*TEST*:
+- Run unit test classes in the /src/test/java/RMIT route
+
 If you have any problem, please contact me via: s3812649@rmit.edu.vn / minhlucky2408@gmail.com
