@@ -7,9 +7,12 @@
 *INSTRUCTIONS*:
 - Executing the program by running the Main class in the project
 - Customized database can be initialized based on the default database for Student, Course and StudentEnrolment CSV files
--> Files for default Student located in: /src/resources/students/default.csv
--> Files for default Course located in: /src/resources/courses/default.csv
--> Files for default StudentEnrolment located in: /src/resources/student-enrolments/default.csv
+
+-> Files for default Student located in: /src/resources/students/default.csv (Example custom file: custom-students.csv)
+
+-> Files for default Course located in: /src/resources/courses/default.csv (Example custom file: custom-courses.csv)
+
+-> Files for default StudentEnrolment located in: /src/resources/student-enrolments/default.csv (Example custom file: custom-enrolments.csv)
 - To setting one's own database, user needs to put the CSV files match the routes for each object's (Make sure to specify file's name including the extension (.csv))
 -> For Example: custom CSV files for Student named good-students.csv can be put in: /src/resources/students/good-student.csv
 - On entering the menu, please always follow the instruction printed on the console to ensure the workflow
