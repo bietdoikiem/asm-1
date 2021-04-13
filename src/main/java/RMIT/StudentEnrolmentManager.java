@@ -422,7 +422,7 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
         return false;
     }
 
-    public boolean menu() {
+    public void menu() {
         Scanner sc = new Scanner(System.in);
         String input = "";
         boolean res;
@@ -466,7 +466,9 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                 default:
                     break;
             }
-            return input.equals("0");
+            if (input.equalsIgnoreCase("0")) {
+                return;
+            }
         }
     }
 
@@ -655,8 +657,6 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             this.setStudentManager(studentManager);
             this.setCourseManager(courseManager);
         }
-        // set manager database for students and courses
-        // populate option3
         this.populate();
         this.menu();
         return true;
@@ -680,7 +680,6 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
             System.out.println("Do you want to use your own database or use default one? (Choose 1 or 2)");
             System.out.println("1. Initialize Database");
             System.out.println("2. Default Database");
-            System.out.println("3. No Initialize (Already set student and course database)");
             navigateOption = sc.nextLine();
             // check option
             while (true) {
@@ -726,12 +725,10 @@ public class StudentEnrolmentManager implements StudentEnrolmentManageable {
                         navigateOption = "success";
                     }
                     break;
-                } else if (navigateOption.equals("3")) {
-                    navigateOption = "success";
-                    break;
                 }
                 else {
                     System.out.println("Wrong choice. Please check again!");
+                    break;
                 }
             }
             if (navigateOption.equals("success")) {

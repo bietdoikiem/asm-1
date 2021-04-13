@@ -49,7 +49,7 @@ public class Student implements Comparable<Student> {
     }
 
     public int compareTo(Student student) {
-        if (this.id.equals(student.id) && this.name.equals(student.name) && this.birthDate.equals(student.birthDate)) {
+        if (this.id.equals(student.id) && this.name.equals(student.name) && this.getBirthDateString().equals(student.getBirthDateString())) {
             return 1;
         }
         return -1;

@@ -175,8 +175,8 @@ public class StudentEnrolmentManagerTest {
         studentEnrolmentManager.setStudentManager(studentManager);
         studentEnrolmentManager.setCourseManager(courseManager);
         studentEnrolmentManager.populateDefault();
-        res = studentEnrolmentManager.menu();
-        assertTrue(res);
+        studentEnrolmentManager.menu();
+        // If there's no error, the function has been called successfully after exiting with option '0'
     }
 
     @Test
